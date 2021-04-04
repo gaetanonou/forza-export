@@ -1,7 +1,0 @@
-{
-
-  "ForzaOptions": {
-    "BaseUrl": "https://api.forza-refurbished.nl/api/v1/",
-    "ApiKey": ""
-  }
-}
