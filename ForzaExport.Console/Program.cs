@@ -25,11 +25,13 @@ namespace ForzaExport
                                 .Build();
 
                 ForzaOptions forzaOptions = configuration.GetSection(nameof(ForzaOptions)).Get<ForzaOptions>();
-                if (string.IsNullOrWhiteSpace(forzaOptions.ApiKey))
+                if (string.IsNullOrWhiteSpace(forzaOptions.Username) || string.IsNullOrWhiteSpace(forzaOptions.Password))
                 {
-                    string apiKey = RequestApiKey();
+                    (string username, string password) = RequestUsernamePassword();
 
-                    AppSettingsHelpers.AddOrUpdateAppSetting("ForzaOptions:ApiKey", apiKey);
+                    AppSettingsHelpers.AddOrUpdateAppSetting("ForzaOptions:Username", username);
+                    AppSettingsHelpers.AddOrUpdateAppSetting("ForzaOptions:Password", password);
+
                     configuration = configurationBuilder.Build();
                     forzaOptions = configuration.GetSection(nameof(ForzaOptions)).Get<ForzaOptions>();
                 }
@@ -53,18 +55,36 @@ namespace ForzaExport
           
         }
 
-        private static string RequestApiKey()
+        private static (string, string) RequestUsernamePassword(string username = null, string password = null)
         {
-            Console.WriteLine("No API Key was found for the Forza API.");
-            Console.WriteLine("Enter API Key:");
-            string apiKey = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(apiKey))
+            if(string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                Console.WriteLine("No username or password was found for the Forza API.");
+        
+            if (string.IsNullOrWhiteSpace(username))
             {
-                Console.WriteLine("API Key cannot be empty. Please try again.");
-                return RequestApiKey();
+                Console.WriteLine("Enter username:");
+                username = Console.ReadLine();
+                if(string.IsNullOrWhiteSpace(username)) 
+                {
+                    Console.WriteLine("Username cannot be empty. Please try again.");
+                    return RequestUsernamePassword(username);
+                }
+              
             }
 
-            return apiKey;
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                Console.WriteLine("Enter password:");
+                password = Console.ReadLine();
+                if(string.IsNullOrWhiteSpace(password)) 
+                {
+                    Console.WriteLine("Password cannot be empty. Please try again.");
+                    return RequestUsernamePassword(username);
+                }
+              
+            }
+
+            return (username, password);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ForzaExport.Application.Services
@@ -16,7 +17,10 @@ namespace ForzaExport.Application.Services
             {
                 BaseAddress = new Uri(forzaOptions.BaseUrl),
             };
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", forzaOptions.ApiKey);
+            
+            byte[] byteArray = Encoding.ASCII.GetBytes($"{forzaOptions.Username}:{forzaOptions.Password}");
+            string base64UsernamePassword = Convert.ToBase64String(byteArray);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64UsernamePassword);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
         public async Task<string> GetProducts()
